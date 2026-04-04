@@ -82,8 +82,8 @@ AFFIRMATION: （朝に唱えるアファメーション。30文字以内。「�
 LUCKY: （ラッキーカラーまたはアイテム。15文字以内）
 SNS: （Instagram・TikTok用の投稿キャプション。絵文字たっぷり・共感性高く・100文字以内）`;
 
-   
-    const res = await fetch("/api/chat", {
+   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
       method:"POST",
       headers:{
         "Content-Type":"application/json",
