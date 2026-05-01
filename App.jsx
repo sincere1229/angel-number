@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 
-// ── 言語データ ──────────────────────────────────────────
 const LANG = {
   ja: {
     appTitle: "エンジェルナンバー",
@@ -131,7 +130,6 @@ const ANGEL_BASE_JA = {
   33:"慈悲と奉仕", 44:"安定と基盤",
 };
 
-// ── おすすめ占い ─────────────────────────────────────
 const RECOMMEND = [
   { icon:"🃏", name:"タロット占い",  desc:"今の状況をカードが教える", href:"https://tarot-app-rouge.vercel.app" },
   { icon:"🔢", name:"数秘術",        desc:"運命数から使命を知る",     href:"https://numerology-app-lovat.vercel.app" },
@@ -297,9 +295,8 @@ export default function AngelApp() {
         input:focus { outline:none; border-color:#d4a520 !important; box-shadow:0 0 0 3px rgba(212,165,32,0.15) !important; }
         .back-link:hover { color:#d4a520 !important; }
         .rec-card:hover { transform:translateY(-3px) !important; border-color:rgba(212,165,32,0.5) !important; box-shadow:0 6px 16px rgba(180,130,30,0.15) !important; }
-        .cta-500:hover { transform:translateY(-2px) !important; box-shadow:0 6px 20px rgba(180,130,30,0.25) !important; }
+        .teso-nudge-btn:hover { transform:translateY(-2px) !important; box-shadow:0 6px 20px rgba(6,199,85,0.4) !important; }
         .cta-line:hover { transform:translateY(-2px) !important; }
-        .cta-1980:hover { transform:translateY(-2px) !important; }
         .cta-3980:hover { transform:translateY(-2px) !important; box-shadow:0 6px 20px rgba(180,130,30,0.3) !important; }
       `}</style>
 
@@ -309,7 +306,6 @@ export default function AngelApp() {
           <button className={`lang-btn ${lang==="ja"?"lang-on":""}`} style={{color: lang==="ja"?"#7a5800":"#a08030"}} onClick={()=>switchLang("ja")}>🇯🇵 JP</button>
           <button className={`lang-btn ${lang==="en"?"lang-on":""}`} style={{color: lang==="en"?"#7a5800":"#a08030"}} onClick={()=>switchLang("en")}>🇬🇧 EN</button>
         </div>
-        {/* 戻るリンク（ヘッダー） */}
         <div style={{display:"flex", gap:16, justifyContent:"center", marginBottom:12}}>
           <a href="https://twinkle-lab.jp" className="back-link" style={s.backLink}>← トップページ</a>
           <a href="https://twinkle-lab.jp/star" className="back-link" style={s.backLink}>← 占いポータル</a>
@@ -425,50 +421,49 @@ export default function AngelApp() {
               <span style={s.luckyVal}>{result.lucky}</span>
             </div>
 
-            {/* ===== 収益導線ブロック ===== */}
+            {/* ===== ★ 手相ナッジ（結果直下） ===== */}
+            <div style={s.tesoNudge}>
+              <div style={s.tesoNudgeTitle}>🤲 より詳しく知りたい方へ</div>
+              <div style={s.tesoNudgeBody}>
+                この占いは"今の流れ"を示しますが、<br/>
+                あなたの本質や人生の流れは手相にも表れます。<br/>
+                無料手相診断では、左手と右手から<br/>
+                本来の自分と今の状態を読み解きます。
+              </div>
+              <a href="https://lin.ee/XHDFrA8"
+                 target="_blank" rel="noopener noreferrer"
+                 className="teso-nudge-btn" style={s.tesoNudgeBtn}>
+                💬 LINEで無料手相診断を受ける
+              </a>
+            </div>
+
+            {/* ===== ★ LINE + ¥3,980 導線（¥500・¥1,980削除） ===== */}
             <div style={s.upsellBlock}>
               <div style={s.upsellTitle}>✦ もっと詳しく知りたい方へ ✦</div>
 
-              {/* 2択：¥500直課金 or LINE無料 */}
-              <div style={s.twoCta}>
-                {/* ¥500 直課金 */}
-                <a href="https://buy.stripe.com/00w14g2j46C66oBcFl33W04"
-                   target="_blank" rel="noopener noreferrer"
-                   className="cta-500" style={s.cta500}>
-                  <div style={s.ctaBadge}>即・結果表示</div>
-                  <div style={s.ctaName}>今すぐ詳しく見る</div>
-                  <div style={s.ctaPrice500}>¥500</div>
-                  <div style={s.ctaBtn500}>今すぐ鑑定する</div>
-                  <div style={s.ctaNote}>すぐに結果が表示されます</div>
-                </a>
-                {/* LINE 無料 */}
-                <a href="https://lin.ee/XHDFrA8"
-                   target="_blank" rel="noopener noreferrer"
-                   className="cta-line" style={s.ctaLine}>
-                  <div style={{...s.ctaBadge, color:"#2a7a50"}}>完全無料</div>
-                  <div style={s.ctaName}>じっくり知りたい方へ</div>
-                  <div style={s.ctaPriceFree}>¥0</div>
-                  <div style={s.ctaBtnLine}>💬 無料で受け取る</div>
-                  <div style={s.ctaNote}>LINE登録するだけ</div>
-                </a>
-              </div>
-
-              {/* ¥1,980 直課金 */}
-              <a href="https://buy.stripe.com/14A8wIbTEf8C9ANfRx33W03"
+              {/* LINE無料 */}
+              <a href="https://lin.ee/XHDFrA8"
                  target="_blank" rel="noopener noreferrer"
-                 className="cta-1980" style={s.cta1980}>
-                <div style={s.cta1980Label}>3テーマ詳細鑑定</div>
-                <div style={s.cta1980Title}>しっかり知りたい方へ（¥1,980）</div>
-                <div style={s.cta1980Sub}>恋愛・仕事・金運をまとめて鑑定 · 即時表示</div>
+                 className="cta-line" style={s.ctaLine}>
+                <div style={{...s.ctaBadge, color:"#2a7a50"}}>完全無料</div>
+                <div style={s.ctaName}>じっくり知りたい方へ</div>
+                <div style={s.ctaPriceFree}>¥0</div>
+                <div style={s.ctaBtnLine}>💬 LINEで無料で受け取る</div>
+                <div style={s.ctaNote}>LINE登録するだけ</div>
               </a>
 
-              {/* ¥3,980 総合鑑定 */}
+              {/* ¥3,980 総合鑑定（統一文言） */}
               <a href="https://twinkle-lab.jp/star/sogo"
                  className="cta-3980" style={s.cta3980}>
-                <div style={s.cta3980Label}>✦ AI総合鑑定 ✦</div>
-                <div style={s.cta3980Title}>人生全体を完全解析</div>
+                <div style={s.cta3980Label}>✦ Premium · AI完全解析 ✦</div>
+                <div style={s.cta3980Title}>AI総合鑑定（手相＋複数占術）</div>
+                <div style={s.cta3980Desc}>
+                  手相・タロット・数秘術・ホロスコープなどを組み合わせ、<br/>
+                  恋愛・仕事・金運・人生の流れを総合的に読み解きます
+                </div>
+                <div style={s.cta3980Orig}>通常¥4,980相当</div>
                 <div style={s.cta3980Price}>¥3,980</div>
-                <div style={s.cta3980Sub}>即時表示 · PDFダウンロード付き · 🔒 安全な決済</div>
+                <div style={s.cta3980Sub}>鑑定結果はLINEでお届け · PDF送付</div>
               </a>
             </div>
 
@@ -509,7 +504,6 @@ export default function AngelApp() {
           </div>
         )}
 
-        {/* フッター前の戻るリンク */}
         <div style={{display:"flex", gap:20, justifyContent:"center", margin:"24px 0 8px"}}>
           <a href="https://twinkle-lab.jp" className="back-link" style={s.backLinkBottom}>← トップページに戻る</a>
           <a href="https://twinkle-lab.jp/star" className="back-link" style={s.backLinkBottom}>← 占いポータルに戻る</a>
@@ -528,7 +522,6 @@ const s = {
   angel:{ fontSize:52, display:"block", marginBottom:10, animation:"float 3s ease-in-out infinite" },
   title:{ fontFamily:"'Cinzel',serif", fontSize:28, fontWeight:700, letterSpacing:"0.12em", color:GD_DARK, marginBottom:6 },
   sub:{ fontSize:14, color:TEXT_SUB, letterSpacing:"0.08em", fontWeight:500 },
-  // 戻るリンク
   backLink:{ fontSize:12, color:"rgba(150,100,20,0.6)", textDecoration:"none", letterSpacing:"0.08em", fontWeight:700, transition:"color 0.2s" },
   backLinkBottom:{ fontSize:12, color:"rgba(150,100,20,0.5)", textDecoration:"none", letterSpacing:"0.08em", fontWeight:700, transition:"color 0.2s" },
   tabBar:{ display:"flex", background:"#f0e0b0", padding:"6px", gap:4 },
@@ -576,27 +569,27 @@ const s = {
   luckyLabel:{ fontSize:15, color:TEXT_SUB, fontWeight:700 },
   luckyVal:{ fontSize:18, fontWeight:900, color:GD_DARK, fontFamily:"'Cinzel',serif" },
 
-  // ===== 収益導線 =====
+  // ★ 手相ナッジ
+  tesoNudge:{ background:"#fff5f8", border:"1px solid rgba(232,160,192,0.4)", borderRadius:16, padding:"20px 16px", textAlign:"center", display:"flex", flexDirection:"column", gap:10, alignItems:"center" },
+  tesoNudgeTitle:{ fontSize:15, color:TEXT, fontWeight:700 },
+  tesoNudgeBody:{ fontSize:13, color:TEXT_SUB, lineHeight:2, fontWeight:500 },
+  tesoNudgeBtn:{ display:"inline-flex", alignItems:"center", gap:8, background:"linear-gradient(135deg,#06c755,#04a844)", border:"none", borderRadius:10, color:"#fff", fontSize:14, fontWeight:700, padding:"13px 24px", textDecoration:"none", transition:"all 0.2s" },
+
+  // ★ 収益導線（¥500・¥1,980削除後）
   upsellBlock:{ background:"#fffdf5", borderRadius:18, padding:"20px 16px", border:"1px solid rgba(212,165,32,0.3)", display:"flex", flexDirection:"column", gap:10 },
   upsellTitle:{ fontSize:14, color:GD_DARK, fontWeight:700, textAlign:"center", letterSpacing:"0.1em", marginBottom:4 },
-  twoCta:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 },
-  cta500:{ display:"flex", flexDirection:"column", alignItems:"center", background:"#fff9e6", border:"1px solid rgba(212,165,32,0.45)", borderRadius:14, padding:"14px 10px", textDecoration:"none", transition:"all 0.2s", gap:4 },
   ctaBadge:{ fontSize:9, color:GD_DARK, letterSpacing:2, fontWeight:700 },
   ctaName:{ fontSize:12, color:TEXT, fontWeight:700, textAlign:"center" },
-  ctaPrice500:{ fontFamily:"'Cinzel',serif", fontSize:22, color:GD_DARK, fontWeight:700 },
-  ctaBtn500:{ background:`linear-gradient(135deg,#8a6a20,${GD})`, color:"#fff", fontSize:11, fontWeight:700, borderRadius:8, padding:"6px 12px" },
   ctaNote:{ fontSize:10, color:TEXT_SUB, textAlign:"center" },
-  ctaLine:{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f0fff8", border:"1px solid rgba(42,122,80,0.3)", borderRadius:14, padding:"14px 10px", textDecoration:"none", transition:"all 0.2s", gap:4 },
+  ctaLine:{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f0fff8", border:"1px solid rgba(42,122,80,0.3)", borderRadius:14, padding:"16px 10px", textDecoration:"none", transition:"all 0.2s", gap:4 },
   ctaPriceFree:{ fontFamily:"'Cinzel',serif", fontSize:22, color:"#2a7a50", fontWeight:700 },
-  ctaBtnLine:{ background:"linear-gradient(135deg,#1a6a3c,#2a8a50)", color:"#fff", fontSize:11, fontWeight:700, borderRadius:8, padding:"6px 12px" },
-  cta1980:{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f8f0ff", border:"1px solid rgba(150,100,200,0.3)", borderRadius:12, padding:"12px 16px", textDecoration:"none", transition:"all 0.2s" },
-  cta1980Label:{ fontSize:10, color:"#6a30a0", letterSpacing:2, fontWeight:700, marginBottom:2 },
-  cta1980Title:{ fontSize:13, color:TEXT, fontWeight:700 },
-  cta1980Sub:{ fontSize:11, color:TEXT_SUB, marginTop:2 },
-  cta3980:{ display:"flex", flexDirection:"column", alignItems:"center", background:`linear-gradient(135deg,rgba(212,165,32,0.12),rgba(212,165,32,0.05))`, border:`1px solid rgba(212,165,32,0.5)`, borderRadius:14, padding:"16px", textDecoration:"none", transition:"all 0.2s" },
-  cta3980Label:{ fontSize:12, color:GD_DARK, letterSpacing:3, fontWeight:700, marginBottom:4 },
-  cta3980Title:{ fontSize:14, color:TEXT, fontWeight:700, marginBottom:6 },
-  cta3980Price:{ fontFamily:"'Cinzel',serif", fontSize:26, color:GD_DARK, fontWeight:700, marginBottom:4 },
+  ctaBtnLine:{ background:"linear-gradient(135deg,#1a6a3c,#2a8a50)", color:"#fff", fontSize:12, fontWeight:700, borderRadius:8, padding:"8px 16px" },
+  cta3980:{ display:"flex", flexDirection:"column", alignItems:"center", background:`linear-gradient(135deg,rgba(212,165,32,0.12),rgba(212,165,32,0.05))`, border:`1px solid rgba(212,165,32,0.5)`, borderRadius:14, padding:"18px 16px", textDecoration:"none", transition:"all 0.2s", gap:4 },
+  cta3980Label:{ fontSize:11, color:GD_DARK, letterSpacing:3, fontWeight:700 },
+  cta3980Title:{ fontSize:15, color:TEXT, fontWeight:700 },
+  cta3980Desc:{ fontSize:12, color:TEXT_SUB, textAlign:"center", lineHeight:1.8 },
+  cta3980Orig:{ fontSize:12, color:TEXT_SUB, textDecoration:"line-through" },
+  cta3980Price:{ fontFamily:"'Cinzel',serif", fontSize:26, color:GD_DARK, fontWeight:700 },
   cta3980Sub:{ fontSize:11, color:TEXT_SUB },
 
   // おすすめ占い
