@@ -169,6 +169,8 @@ export default function AngelApp() {
   const [show, setShow]       = useState(false);
   const [copied, setCopied]   = useState(false);
   const [shared, setShared]   = useState(false);
+  // ★ Instagram/TikTok トースト
+  const [toast, setToast]     = useState("");
   const inputRef = useRef(null);
 
   const L = LANG[lang];
@@ -178,6 +180,12 @@ export default function AngelApp() {
     if (result) setTimeout(() => setShow(true), 50);
     else setShow(false);
   }, [result]);
+
+  // ★ トースト表示
+  function showToast(msg) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2800);
+  }
 
   function switchLang(l) {
     setLang(l); setResult(null); setConcern(null); setError("");
@@ -259,9 +267,20 @@ export default function AngelApp() {
     const concernLabel = L.concerns.find(c => c.id === result?.concernId)?.label || "";
     const text = L.shareText(result, concernLabel);
     const encoded = encodeURIComponent(text);
-    if (platform === "twitter") window.open(`https://twitter.com/intent/tweet?text=${encoded}`, "_blank");
-    else if (platform === "line") window.open(`https://line.me/R/msg/text/?${encoded}`, "_blank");
-    else if (platform === "copy") {
+    const pageUrl = window.location.href;
+    if (platform === "twitter") {
+      window.open(`https://twitter.com/intent/tweet?text=${encoded}`, "_blank");
+    } else if (platform === "line") {
+      window.open(`https://line.me/R/msg/text/?${encoded}`, "_blank");
+    } else if (platform === "instagram") {
+      navigator.clipboard.writeText(text + "\n" + pageUrl).then(() => {
+        showToast("📋 コピーしました！Instagramに投稿してね♪");
+      }).catch(() => showToast("URLをコピーしてInstagramに投稿してね♪"));
+    } else if (platform === "tiktok") {
+      navigator.clipboard.writeText(text + "\n" + pageUrl).then(() => {
+        showToast("📋 コピーしました！TikTokに投稿してね♪");
+      }).catch(() => showToast("URLをコピーしてTikTokに投稿してね♪"));
+    } else if (platform === "copy") {
       navigator.clipboard.writeText(text).then(() => {
         setShared(true); setTimeout(() => setShared(false), 2000);
       });
@@ -277,6 +296,16 @@ export default function AngelApp() {
 
   return (
     <div style={s.root}>
+      {/* ★ トースト */}
+      {toast && (
+        <div style={{
+          position:"fixed", bottom:30, left:"50%", transform:"translateX(-50%)",
+          background:"rgba(212,165,32,0.95)", color:"#3a2000", fontSize:13, fontWeight:700,
+          padding:"12px 24px", borderRadius:30, zIndex:999, whiteSpace:"nowrap",
+          boxShadow:"0 4px 16px rgba(0,0,0,0.15)"
+        }}>{toast}</div>
+      )}
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Cinzel:wght@600;700&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
@@ -295,8 +324,7 @@ export default function AngelApp() {
         input:focus { outline:none; border-color:#d4a520 !important; box-shadow:0 0 0 3px rgba(212,165,32,0.15) !important; }
         .back-link:hover { color:#d4a520 !important; }
         .rec-card:hover { transform:translateY(-3px) !important; border-color:rgba(212,165,32,0.5) !important; box-shadow:0 6px 16px rgba(180,130,30,0.15) !important; }
-        .teso-nudge-btn:hover { transform:translateY(-2px) !important; box-shadow:0 6px 20px rgba(6,199,85,0.4) !important; }
-        .cta-line:hover { transform:translateY(-2px) !important; }
+        .teso-nudge-btn:hover { transform:translateY(-2px) !important; box-shadow:0 6px 20px rgba(155,127,212,0.4) !important; }
         .cta-3980:hover { transform:translateY(-2px) !important; box-shadow:0 6px 20px rgba(180,130,30,0.3) !important; }
       `}</style>
 
@@ -421,7 +449,7 @@ export default function AngelApp() {
               <span style={s.luckyVal}>{result.lucky}</span>
             </div>
 
-            {/* ===== ★ 手相ナッジ（結果直下） ===== */}
+            {/* ★ 手相ナッジ（LINEボタン→TSO手相ページへ変更） */}
             <div style={s.tesoNudge}>
               <div style={s.tesoNudgeTitle}>🤲 より詳しく知りたい方へ</div>
               <div style={s.tesoNudgeBody}>
@@ -430,29 +458,16 @@ export default function AngelApp() {
                 無料手相診断では、左手と右手から<br/>
                 本来の自分と今の状態を読み解きます。
               </div>
-              <a href="https://lin.ee/XHDFrA8"
+              <a href="https://twinkle-lab.jp/star/tesou-free"
                  target="_blank" rel="noopener noreferrer"
                  className="teso-nudge-btn" style={s.tesoNudgeBtn}>
-                💬 LINEで無料手相診断を受ける
+                🤲 無料手相診断を受ける
               </a>
             </div>
 
-            {/* ===== ★ LINE + ¥3,980 導線（¥500・¥1,980削除） ===== */}
+            {/* ★ ¥3,980 総合鑑定（LINE無料ブロック削除） */}
             <div style={s.upsellBlock}>
               <div style={s.upsellTitle}>✦ もっと詳しく知りたい方へ ✦</div>
-
-              {/* LINE無料 */}
-              <a href="https://lin.ee/XHDFrA8"
-                 target="_blank" rel="noopener noreferrer"
-                 className="cta-line" style={s.ctaLine}>
-                <div style={{...s.ctaBadge, color:"#2a7a50"}}>完全無料</div>
-                <div style={s.ctaName}>じっくり知りたい方へ</div>
-                <div style={s.ctaPriceFree}>¥0</div>
-                <div style={s.ctaBtnLine}>💬 LINEで無料で受け取る</div>
-                <div style={s.ctaNote}>LINE登録するだけ</div>
-              </a>
-
-              {/* ¥3,980 総合鑑定（統一文言） */}
               <a href="https://twinkle-lab.jp/star/sogo"
                  className="cta-3980" style={s.cta3980}>
                 <div style={s.cta3980Label}>✦ Premium · AI完全解析 ✦</div>
@@ -463,7 +478,7 @@ export default function AngelApp() {
                 </div>
                 <div style={s.cta3980Orig}>通常¥4,980相当</div>
                 <div style={s.cta3980Price}>¥3,980</div>
-                <div style={s.cta3980Sub}>鑑定結果はLINEでお届け · PDF送付</div>
+                <div style={s.cta3980Sub}>鑑定結果はPDFでお届け</div>
               </a>
             </div>
 
@@ -483,16 +498,46 @@ export default function AngelApp() {
               </div>
             </div>
 
+            {/* ★ シェアボタン（Instagram・TikTok追加） */}
             <div style={s.shareCard}>
               <div style={s.shareTitle}>{L.labelShare}</div>
               <div style={s.shareRow}>
-                <button className="share-btn" onClick={()=>handleShare("twitter")} style={{...s.shareBtn, background:"#000", color:"#fff"}}><span style={s.sBtnIcon}>𝕏</span><span style={s.sBtnLabel}>X</span></button>
-                <button className="share-btn" onClick={()=>handleShare("line")} style={{...s.shareBtn, background:"#06C755", color:"#fff"}}><span style={s.sBtnIcon}>💬</span><span style={s.sBtnLabel}>LINE</span></button>
-                <button className="share-btn" onClick={()=>handleShare("copy")} style={{...s.shareBtn, background:"#f5ead0", color:"#7a5800", border:"1px solid rgba(212,165,32,0.4)"}}><span style={s.sBtnIcon}>{shared?"✓":"📋"}</span><span style={s.sBtnLabel}>{shared?L.copied:L.copy}</span></button>
-                {navigator.share && <button className="share-btn" onClick={()=>handleShare("native")} style={{...s.shareBtn, background:"#d4a520", color:"#fff"}}><span style={s.sBtnIcon}>↑</span><span style={s.sBtnLabel}>{L.copy}</span></button>}
+                <button className="share-btn" onClick={()=>handleShare("twitter")}
+                  style={{...s.shareBtn, background:"#000", color:"#fff"}}>
+                  <span style={s.sBtnIcon}>𝕏</span>
+                  <span style={s.sBtnLabel}>X</span>
+                </button>
+                <button className="share-btn" onClick={()=>handleShare("line")}
+                  style={{...s.shareBtn, background:"#06C755", color:"#fff"}}>
+                  <span style={s.sBtnIcon}>💬</span>
+                  <span style={s.sBtnLabel}>LINE</span>
+                </button>
+                <button className="share-btn" onClick={()=>handleShare("instagram")}
+                  style={{...s.shareBtn, background:"linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)", color:"#fff"}}>
+                  <span style={s.sBtnIcon}>📷</span>
+                  <span style={s.sBtnLabel}>Insta</span>
+                </button>
+                <button className="share-btn" onClick={()=>handleShare("tiktok")}
+                  style={{...s.shareBtn, background:"#010101", color:"#fff"}}>
+                  <span style={s.sBtnIcon}>🎵</span>
+                  <span style={s.sBtnLabel}>TikTok</span>
+                </button>
+                <button className="share-btn" onClick={()=>handleShare("copy")}
+                  style={{...s.shareBtn, background:"#f5ead0", color:"#7a5800", border:"1px solid rgba(212,165,32,0.4)"}}>
+                  <span style={s.sBtnIcon}>{shared?"✓":"📋"}</span>
+                  <span style={s.sBtnLabel}>{shared?L.copied:L.copy}</span>
+                </button>
+                {navigator.share && (
+                  <button className="share-btn" onClick={()=>handleShare("native")}
+                    style={{...s.shareBtn, background:"#d4a520", color:"#fff"}}>
+                    <span style={s.sBtnIcon}>↑</span>
+                    <span style={s.sBtnLabel}>{L.copy}</span>
+                  </button>
+                )}
               </div>
               <p style={s.shareNote}>{L.shareNote}</p>
             </div>
+
             <div style={s.snsCard}>
               <div style={s.snsHead}>
                 <span>{L.labelSNS}</span>
@@ -568,22 +613,14 @@ const s = {
   luckyCard:{ background:"#fff9e6", borderRadius:12, padding:"15px 18px", textAlign:"center", border:"1px solid rgba(212,165,32,0.4)" },
   luckyLabel:{ fontSize:15, color:TEXT_SUB, fontWeight:700 },
   luckyVal:{ fontSize:18, fontWeight:900, color:GD_DARK, fontFamily:"'Cinzel',serif" },
-
-  // ★ 手相ナッジ
-  tesoNudge:{ background:"#fff5f8", border:"1px solid rgba(232,160,192,0.4)", borderRadius:16, padding:"20px 16px", textAlign:"center", display:"flex", flexDirection:"column", gap:10, alignItems:"center" },
+  // ★ 手相ナッジ（紫グラデーション）
+  tesoNudge:{ background:"#f8f0ff", border:"1px solid rgba(155,127,212,0.3)", borderRadius:16, padding:"20px 16px", textAlign:"center", display:"flex", flexDirection:"column", gap:10, alignItems:"center" },
   tesoNudgeTitle:{ fontSize:15, color:TEXT, fontWeight:700 },
   tesoNudgeBody:{ fontSize:13, color:TEXT_SUB, lineHeight:2, fontWeight:500 },
-  tesoNudgeBtn:{ display:"inline-flex", alignItems:"center", gap:8, background:"linear-gradient(135deg,#06c755,#04a844)", border:"none", borderRadius:10, color:"#fff", fontSize:14, fontWeight:700, padding:"13px 24px", textDecoration:"none", transition:"all 0.2s" },
-
-  // ★ 収益導線（¥500・¥1,980削除後）
+  tesoNudgeBtn:{ display:"inline-flex", alignItems:"center", gap:8, background:"linear-gradient(135deg,#c4a8f0,#9b7fd4)", border:"none", borderRadius:10, color:"#fff", fontSize:14, fontWeight:700, padding:"13px 24px", textDecoration:"none", transition:"all 0.2s" },
+  // ★ 収益導線（LINE無料ブロック削除後）
   upsellBlock:{ background:"#fffdf5", borderRadius:18, padding:"20px 16px", border:"1px solid rgba(212,165,32,0.3)", display:"flex", flexDirection:"column", gap:10 },
   upsellTitle:{ fontSize:14, color:GD_DARK, fontWeight:700, textAlign:"center", letterSpacing:"0.1em", marginBottom:4 },
-  ctaBadge:{ fontSize:9, color:GD_DARK, letterSpacing:2, fontWeight:700 },
-  ctaName:{ fontSize:12, color:TEXT, fontWeight:700, textAlign:"center" },
-  ctaNote:{ fontSize:10, color:TEXT_SUB, textAlign:"center" },
-  ctaLine:{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f0fff8", border:"1px solid rgba(42,122,80,0.3)", borderRadius:14, padding:"16px 10px", textDecoration:"none", transition:"all 0.2s", gap:4 },
-  ctaPriceFree:{ fontFamily:"'Cinzel',serif", fontSize:22, color:"#2a7a50", fontWeight:700 },
-  ctaBtnLine:{ background:"linear-gradient(135deg,#1a6a3c,#2a8a50)", color:"#fff", fontSize:12, fontWeight:700, borderRadius:8, padding:"8px 16px" },
   cta3980:{ display:"flex", flexDirection:"column", alignItems:"center", background:`linear-gradient(135deg,rgba(212,165,32,0.12),rgba(212,165,32,0.05))`, border:`1px solid rgba(212,165,32,0.5)`, borderRadius:14, padding:"18px 16px", textDecoration:"none", transition:"all 0.2s", gap:4 },
   cta3980Label:{ fontSize:11, color:GD_DARK, letterSpacing:3, fontWeight:700 },
   cta3980Title:{ fontSize:15, color:TEXT, fontWeight:700 },
@@ -591,7 +628,6 @@ const s = {
   cta3980Orig:{ fontSize:12, color:TEXT_SUB, textDecoration:"line-through" },
   cta3980Price:{ fontFamily:"'Cinzel',serif", fontSize:26, color:GD_DARK, fontWeight:700 },
   cta3980Sub:{ fontSize:11, color:TEXT_SUB },
-
   // おすすめ占い
   recBlock:{ background:"#fff", borderRadius:16, padding:"18px 16px", border:"1px solid rgba(212,165,32,0.2)", boxShadow:"0 2px 12px rgba(180,130,30,0.06)" },
   recTitle:{ fontSize:13, color:GD_DARK, fontWeight:700, textAlign:"center", letterSpacing:"0.1em", marginBottom:12 },
@@ -601,13 +637,12 @@ const s = {
   recName:{ fontSize:11, color:TEXT, fontWeight:700, marginBottom:2 },
   recDesc:{ fontSize:10, color:TEXT_SUB, lineHeight:1.4 },
   recFree:{ fontSize:9, color:"#2a7a50", border:"1px solid rgba(42,122,80,0.3)", borderRadius:8, padding:"2px 6px", marginTop:4, fontWeight:700 },
-
   shareCard:{ background:"#fff", borderRadius:16, padding:"20px 18px", border:"1px solid rgba(212,165,32,0.25)", boxShadow:"0 2px 16px rgba(180,130,30,0.08)" },
   shareTitle:{ fontSize:15, color:TEXT_SUB, fontWeight:700, letterSpacing:"0.08em", marginBottom:14, textAlign:"center" },
-  shareRow:{ display:"flex", gap:10, justifyContent:"center", marginBottom:12, flexWrap:"wrap" },
-  shareBtn:{ display:"flex", flexDirection:"column", alignItems:"center", gap:4, padding:"12px 18px", borderRadius:14, border:"none", cursor:"pointer", transition:"all 0.2s", minWidth:68, fontFamily:"'Noto Sans JP',sans-serif" },
-  sBtnIcon:{ fontSize:20, lineHeight:1 },
-  sBtnLabel:{ fontSize:12, fontWeight:700, letterSpacing:"0.05em" },
+  shareRow:{ display:"flex", gap:8, justifyContent:"center", marginBottom:12, flexWrap:"wrap" },
+  shareBtn:{ display:"flex", flexDirection:"column", alignItems:"center", gap:4, padding:"10px 14px", borderRadius:14, border:"none", cursor:"pointer", transition:"all 0.2s", minWidth:60, fontFamily:"'Noto Sans JP',sans-serif" },
+  sBtnIcon:{ fontSize:18, lineHeight:1 },
+  sBtnLabel:{ fontSize:11, fontWeight:700, letterSpacing:"0.05em" },
   shareNote:{ fontSize:12, color:TEXT_SUB, fontWeight:500, textAlign:"center", letterSpacing:"0.05em" },
   snsCard:{ background:"#fff", borderRadius:14, padding:"16px 18px", border:"1px solid rgba(212,165,32,0.25)", boxShadow:"0 2px 12px rgba(180,130,30,0.06)" },
   snsHead:{ display:"flex", alignItems:"center", justifyContent:"space-between", fontSize:14, color:TEXT_SUB, fontWeight:700, marginBottom:10 },
